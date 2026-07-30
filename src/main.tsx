@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
 import App from './App.tsx'
-import { AuthProvider } from './contexts/AuthContext'
 import { ConfigError } from './components/ConfigError'
 import { isSupabaseConfigured } from './lib/supabaseClient'
 
@@ -30,9 +29,7 @@ if (!isSupabaseConfigured) {
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <App />
         </BrowserRouter>
       </QueryClientProvider>
     </StrictMode>,

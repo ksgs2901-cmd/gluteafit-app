@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
-import { completeWorkout } from '../lib/api'
+import { useLocalProgress } from '../hooks/useLocalProgress'
 import { VideoModal } from '../components/VideoModal'
 import { ChevronLeftIcon, CheckIcon, PauseIcon, PlayIcon, SkipIcon, VideoIcon } from '../components/icons'
 import type { Tables } from '../types/database'
@@ -52,7 +52,7 @@ function buildSteps(workout: WorkoutWithExercises): Step[] {
 export function WorkoutPlayer() {
   const { slug = '' } = useParams()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
+  const { completeWorkout } = useLocalProgress()
 
   const { data: workout, isLoading } = useQuery({
     queryKey: ['workout', slug],
@@ -94,13 +94,6 @@ export function WorkoutPlayer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIndex, paused, finished, currentStep])
 
-  const completeMutation = useMutation({
-    mutationFn: () => completeWorkout(workout!.id, Math.max(elapsedRef.current, 1)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-    },
-  })
-
   function goToNext() {
     setStepIndex((idx) => {
       const next = idx + 1
@@ -119,7 +112,10 @@ export function WorkoutPlayer() {
 
   useEffect(() => {
     if (finished && workout) {
-      completeMutation.mutate()
+      completeWorkout(
+        { id: workout.id, slug: workout.slug, title: workout.title },
+        Math.max(elapsedRef.current, 1)
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished])
@@ -157,7 +153,7 @@ export function WorkoutPlayer() {
 
   if (!currentStep) return null
 
-  const progress = ((stepIndex + 1) / steps.length) * 100
+  const progressPercent = ((stepIndex + 1) / steps.length) * 100
 
   return (
     <div className="flex min-h-svh flex-col bg-ink-900 text-white">
@@ -170,7 +166,7 @@ export function WorkoutPlayer() {
           <ChevronLeftIcon className="h-5 w-5" />
         </button>
         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-bloom-500 transition-all" style={{ width: `${progress}%` }} />
+          <div className="h-full rounded-full bg-bloom-500 transition-all" style={{ width: `${progressPercent}%` }} />
         </div>
         <span className="shrink-0 text-xs text-white/60">
           {currentStep.exerciseNumber}/{currentStep.totalExercises}

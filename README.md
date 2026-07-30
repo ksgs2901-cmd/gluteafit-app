@@ -1,18 +1,20 @@
 # GlúteaFit
 
-SaaS de treinos de glúteos para mulheres — cadastro/login, treinos por nível (Iniciante/Intermediário/Avançado), player com timer e vídeos de demonstração, e acompanhamento de progresso.
+App de treinos de glúteos para mulheres — treinos por nível (Iniciante/Intermediário/Avançado), player com timer e vídeos de demonstração, progresso salvo localmente.
+
+Fase atual: **validação de oferta**, sem contas de usuário. O progresso (nível, sequência, treinos concluídos) fica salvo só no `localStorage` do navegador. Autenticação e sincronização entre dispositivos ficam para uma fase futura, junto com o sistema de acesso via webhook (pós-compra).
 
 ## Stack
 
 - **Frontend**: React + Vite + TypeScript + Tailwind CSS v4, `react-router-dom`, `@tanstack/react-query`.
-- **Backend**: Supabase (Postgres + Auth + Row Level Security + Edge Functions).
+- **Backend**: Supabase (Postgres + Row Level Security) — usado só como catálogo público de treinos/exercícios, sem login.
 
 ## Estrutura
 
-- `src/pages` — telas (login, cadastro, painel, treinos, player, perfil).
-- `src/contexts/AuthContext.tsx` — sessão do Supabase Auth.
-- `src/lib/api.ts` — chamadas às Edge Functions (`dashboard`, `complete-workout`).
-- `supabase/` (não versionado neste repo — schema, RLS e Edge Functions vivem no projeto Supabase).
+- `src/pages` — telas (painel, treinos, player, perfil).
+- `src/lib/localProgress.ts` — leitura/escrita do progresso no `localStorage`.
+- `src/hooks/useLocalProgress.ts` — hook React sobre o `localProgress`.
+- `supabase/` (não versionado neste repo — schema e RLS vivem no projeto Supabase).
 
 ## Rodando localmente
 
@@ -29,6 +31,5 @@ Variáveis de ambiente necessárias (veja `.env.example`):
 
 ## Segurança
 
-- RLS habilitado em todas as tabelas; cada usuária só acessa seus próprios dados.
-- Lógica sensível (cálculo de sequência, gravação de progresso) roda em Edge Functions que validam o JWT do usuário no servidor.
+- RLS habilitado em todas as tabelas. O catálogo de treinos/exercícios é público (somente leitura); não há dados de usuário no banco nesta fase.
 - Nenhuma chave secreta é exposta no client.
