@@ -4,19 +4,23 @@ import type { Database } from '../types/database'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string | undefined
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    'Variáveis de ambiente do Supabase ausentes. Configure VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY no arquivo .env (veja .env.example).'
-  )
-}
+// Never throw at module scope here: a thrown error during import happens
+// before React can render anything, which produces a blank white page with
+// no visible message. Missing config is instead surfaced by main.tsx via
+// `isSupabaseConfigured`, as a real screen the user can read.
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseKey)
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
-  auth: {
-    flowType: 'pkce',
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-  },
-})
+export const supabase = createClient<Database>(
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabaseKey || 'placeholder-key',
+  {
+    auth: {
+      flowType: 'pkce',
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  }
+)
 
-export const EDGE_FUNCTIONS_URL = `${supabaseUrl}/functions/v1`
+export const EDGE_FUNCTIONS_URL = `${supabaseUrl ?? ''}/functions/v1`
