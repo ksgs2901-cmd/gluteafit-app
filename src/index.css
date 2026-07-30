@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Poppins", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-bloom-50: #fff1f6;
+  --color-bloom-100: #ffe1ec;
+  --color-bloom-200: #ffc2d9;
+  --color-bloom-300: #ff94bc;
+  --color-bloom-400: #fb5c98;
+  --color-bloom-500: #f22d76;
+  --color-bloom-600: #db1560;
+  --color-bloom-700: #b80c4d;
+  --color-bloom-800: #930c41;
+  --color-bloom-900: #7a0e39;
+
+  --color-ink-900: #1c1420;
+  --color-ink-700: #453a4d;
+  --color-ink-500: #7a6d84;
+  --color-ink-300: #c9c0d1;
+  --color-ink-100: #efe9f0;
+
+  --color-cream: #fbf7f5;
+  --color-cream-dark: #f3ebe8;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-cream);
+  color: var(--color-ink-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+/* Hide scrollbar on the horizontal level-filter tabs while staying scrollable */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
